@@ -333,6 +333,24 @@ lark-cli docs +update --as user --doc "https://my.feishu.cn/wiki/xxx" --markdown
 > 2. Chrome DevTools MCP 是否正在运行
 > 3. 是否需要配置 MCP server
 
+**如果以上都正常但仍无法连接，可能是 MCP 调试端口未正确注册。尝试手动修复：**
+
+```bash
+# 1. 关闭所有 Chrome 进程
+killall -9 "Google Chrome"
+
+# 2. 以调试模式启动 Chrome（使用独立的用户数据目录，避免影响日常 Chrome）
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --remote-debugging-port=9222 \
+  --user-data-dir=/tmp/chrome_debug_profile
+
+# 3. 手动创建 DevToolsActivePort 文件（路径中的第二行是 Chrome 的 WebSocket 调试地址，需根据实际情况填写）
+echo "9222
+/devtools/browser/xxx" > ~/Library/Application\ Support/Google/Chrome/DevToolsActivePort
+```
+
+> **注意**：步骤 2 使用了 `/tmp/chrome_debug_profile` 作为独立用户数据目录，这样不会影响你日常使用的 Chrome 配置和登录状态。但小红书登录态可能需要重新登录。
+
 ### 页面加载失败
 如果某个帖子页面加载超时或出错，记录该帖子的 URL，跳过继续下一篇，在报告中标记为"未成功采集"。
 
